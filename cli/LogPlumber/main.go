@@ -17,6 +17,7 @@ var lastTime time.Time
 var currentTime time.Time
 var destPath string
 var srcPath string
+var logname string
 
 
 func initCLI() *cli.App {
@@ -141,7 +142,7 @@ func processFile(fname string) error {
 		}
 	}
 
-	newFile, err := os.Create(destPath + filepath.Base(fname))
+	newFile, err := os.Create(destPath + logname)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -158,22 +159,28 @@ func parseLines(lines []string) error{
 	s := ""
 	var err error = nil
 	formatTimeStr := "2006-01-02T15:04:05.000"
-	for _, line := range lines {
+	for i, line := range lines {
 		s = line[0:23]
-		// s = strings.Replace(s, "T", " ", 1)
-		currentTime,err = time.Parse(formatTimeStr,s)
-		if err == nil {
-			if lastTime.IsZero() {
-				lastTime = currentTime
-				continue
+		if i == 0 {
+			lastTime,err = time.Parse(formatTimeStr,s)
+			if err != nil{
+				return err
 			}
-			if  lastTime.After(currentTime) {
-				return fmt.Errorf("error: log timestamp is out of order")
-			}
-			lastTime = currentTime
+			
+			logname =  strings.Replace(lastTime.Format("2006-01-02 15:04:05"), " ", "-", 1)  
+			logname =  strings.Replace(logname, ":", "-", 2)  + "-chia-logs.txt"
 		}else{
-			return err
+			currentTime,err = time.Parse(formatTimeStr,s)
+			if err == nil {
+				if  lastTime.After(currentTime) {
+					return fmt.Errorf("error: log timestamp is out of order")
+				}
+				lastTime = currentTime
+			}else{
+				return err
+			}
 		}
+		
 		
 	}
 	return err
