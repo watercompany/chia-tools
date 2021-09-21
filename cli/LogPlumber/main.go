@@ -19,7 +19,6 @@ var destPath string
 var srcPath string
 var logname string
 
-
 func initCLI() *cli.App {
 
 	app := cli.NewApp()
@@ -59,7 +58,7 @@ func addCLICommands(app *cli.App) {
 					fmt.Println("target folder does not exist, please try again")
 					os.Exit(1)
 				}
-				 
+
 				processLogDir(srcPath)
 				return nil
 			},
@@ -116,7 +115,6 @@ func processLogDir(logDir string) {
 
 }
 
-
 func processFile(fname string) error {
 
 	file, err := os.Open(fname)
@@ -147,7 +145,7 @@ func processFile(fname string) error {
 		log.Fatal(err)
 	}
 	defer newFile.Close()
- 
+
 	_, err = io.Copy(newFile, file)
 	if err != nil {
 		log.Fatal(err)
@@ -155,35 +153,36 @@ func processFile(fname string) error {
 	return nil
 }
 
-func parseLines(lines []string) error{
+func parseLines(lines []string) error {
 	s := ""
 	var err error = nil
 	formatTimeStr := "2006-01-02T15:04:05.000"
 	for i, line := range lines {
+		if len(line) < 23 {
+			continue
+		}
+
 		s = line[0:23]
 		if i == 0 {
-			lastTime,err = time.Parse(formatTimeStr,s)
-			if err != nil{
+			lastTime, err = time.Parse(formatTimeStr, s)
+			if err != nil {
 				return err
 			}
-			
-			logname =  strings.Replace(lastTime.Format("2006-01-02 15:04:05"), " ", "-", 1)  
-			logname =  strings.Replace(logname, ":", "-", 2)  + "-chia-logs.txt"
-		}else{
-			currentTime,err = time.Parse(formatTimeStr,s)
+
+			logname = strings.Replace(lastTime.Format("2006-01-02 15:04:05"), " ", "-", 1)
+			logname = strings.Replace(logname, ":", "-", 2) + "-chia-logs.txt"
+		} else {
+			currentTime, err = time.Parse(formatTimeStr, s)
 			if err == nil {
-				if  lastTime.After(currentTime) {
+				if lastTime.After(currentTime) {
 					return fmt.Errorf("error: log timestamp is out of order")
 				}
 				lastTime = currentTime
-			}else{
+			} else {
 				return err
 			}
 		}
-		
-		
+
 	}
 	return err
 }
-
- 
