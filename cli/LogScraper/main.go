@@ -253,7 +253,7 @@ func scrapeLogs(logDir string) error {
 		dateIndexMap[d.Format(formatTimeStr)] = x
 		x++
 	}
-
+	CSVFilename = CSVFilename + "-found-proofs-summary"
 	for _, file := range files {
 		if !strings.Contains(file, "farm") {
 			continue
@@ -265,7 +265,7 @@ func scrapeLogs(logDir string) error {
 		csvDataFarmIndex := farmIndexMap[farmName]
 
 		if *wins {
-			CSVFilename = CSVFilename + "-found-proofs-summary"
+
 			err = findProofsFound(file, &CSVData, &dateIndexMap, csvDataFarmIndex)
 			if err != nil {
 				return fmt.Errorf("error finding proofs: %v", err)
