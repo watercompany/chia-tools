@@ -19,7 +19,7 @@ sudo go run ./cli/LogScraper/main.go
 -print [Set if summary will be printed in the cli]
 ```
 Note:
-Source Directory must be a directory that contains folders "farm-01", "farm-02", "farm-03", and so on which then contains the actual harvester logs.
+Source Directory must be a directory that contain folders "farm-01", "farm-02", "farm-03", and so on which then contains the actual harvester logs.
 
 Example command:
 ```
