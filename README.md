@@ -14,12 +14,14 @@ To get proofs found, use:
 sudo go run ./cli/LogScraper/main.go 
 -src [Directory that contains the harvester logs] 
 -dest [Destination directory of saved csv] 
--wins [Set if data scraped will be proofs found] 
+-proofs [Set if data scraped will be proofs found] 
+-total-plots [Set if tool will scrape for total plots]
+-total-eligible-plots [Set if tool will scrape for total eligible plots]
 -save [Set if csv file will be saved to the dest dir] 
 -print [Set if summary will be printed in the cli]
 ```
 Note:
-Source Directory must be a directory that contains folders "farm-01", "farm-02", "farm-03", and so on which then contains the actual harvester logs.
+Source Directory must be a directory that contain folders "farm-01", "farm-02", "farm-03", and so on which then contains the actual harvester logs.
 
 Example command:
 ```
