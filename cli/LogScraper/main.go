@@ -17,6 +17,7 @@ var (
 	totalEligiblePlots *bool
 	maxProofTime       *bool
 	medianProofTime    *bool
+	meanProofTime      *bool
 
 	save  *bool
 	print *bool
@@ -31,6 +32,7 @@ func init() {
 	totalEligiblePlots = flag.Bool("total-eligible-plots", false, "set if tool will scrape for total eligible plots")
 	maxProofTime = flag.Bool("max-proof-time", false, "set if tool will scrape for max proof time")
 	medianProofTime = flag.Bool("median-proof-time", false, "set if tool will scrape for median proof time")
+	meanProofTime = flag.Bool("mean-proof-time", false, "set if tool will scrape for mean proof time")
 
 	save = flag.Bool("save", false, "set if csv will be saved")
 	print = flag.Bool("print", false, "set if summary will be printed")
@@ -80,6 +82,7 @@ func main() {
 		TotalEligiblePlots: *totalEligiblePlots,
 		MaxProofTime:       *maxProofTime,
 		MedianProofTime:    *medianProofTime,
+		MeanProofTime:      *meanProofTime,
 	}
 
 	err := scraper.ScrapeLogs(scraperCfg)
