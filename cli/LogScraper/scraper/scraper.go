@@ -10,8 +10,10 @@ import (
 )
 
 const (
-	proofFound    = "---1---"
-	formatTimeStr = "2006-01-02"
+	valuePlaceholder   = "-------"
+	proofFound         = "---1---"
+	formatTimeStr      = "2006-01-02"
+	timeFormatFromLogs = "2006-01-02T15:04:05.000"
 )
 
 func countFarmFolders(logDir string) (int, error) {
@@ -50,8 +52,62 @@ func saveCSV(data [][]string, dest string) error {
 	return nil
 }
 
+func processScraping(cfg ScraperCfg, filePath string, CSVData *[][]string, processDataMap *map[FarmDateMap][]float32, dateIndexMap *map[string]int, csvDataFarmIndex int) error {
+	file, err := os.Open(filePath)
+	if err != nil {
+		return fmt.Errorf("failed to open log file: %s, skipping reading", err)
+	}
+	defer file.Close()
+
+	stat, err := os.Stat(filePath)
+	if err != nil {
+		return fmt.Errorf("error reading log file: %s, skipping reading", err)
+	}
+
+	if stat.Size() > 0 {
+		buf := make([]byte, stat.Size())
+		_, err = file.ReadAt(buf, int64(0))
+		if err == nil {
+			lines := strings.Split(strings.ReplaceAll(string(buf), "\r\n", "\n"), "\n")
+
+			if cfg.Proofs {
+				err := parseLogForProofsFound(lines, CSVData, dateIndexMap, csvDataFarmIndex)
+				if err != nil {
+					return fmt.Errorf("error finding proofs: %v", err)
+				}
+			} else if cfg.TotalPlots {
+				err = parseLogForTotalPlots(lines, CSVData, dateIndexMap, csvDataFarmIndex)
+				if err != nil {
+					return fmt.Errorf("error finding total plots: %v", err)
+				}
+			} else if cfg.TotalEligiblePlots {
+				err := parseLogForTotalEligiblePlots(lines, CSVData, dateIndexMap, csvDataFarmIndex)
+				if err != nil {
+					return fmt.Errorf("error finding total eligible plots: %v", err)
+				}
+			} else if cfg.MaxProofTime {
+				err := parseLogForMaxProofTime(lines, CSVData, dateIndexMap, csvDataFarmIndex)
+				if err != nil {
+					return fmt.Errorf("error finding max proof time: %v", err)
+				}
+			} else if cfg.MedianProofTime {
+				err := parseLogForMedianProofTime(lines, CSVData, processDataMap, dateIndexMap, csvDataFarmIndex)
+				if err != nil {
+					return fmt.Errorf("error finding median proof time: %v", err)
+				}
+			}
+
+		} else {
+			return fmt.Errorf("error when reading bytes from log file: %s", err)
+		}
+	}
+
+	return nil
+}
+
 func ScrapeLogs(cfg ScraperCfg) error {
 	var CSVData = [][]string{}
+	var processDataMap = make(map[FarmDateMap][]float32)
 	dateIndexMap := make(map[string]int)
 	farmIndexMap := make(map[string]int)
 	CSVFilename := cfg.DestDir + time.Now().Format(formatTimeStr)
@@ -65,7 +121,7 @@ func ScrapeLogs(cfg ScraperCfg) error {
 	CSVData = append(CSVData, []string{"Date      "})
 	dataToBeAdded := []string{}
 	for i := 0; i < farmFoldersCount; i++ {
-		dataToBeAdded = append(dataToBeAdded, "-------")
+		dataToBeAdded = append(dataToBeAdded, valuePlaceholder)
 		farmName := fmt.Sprintf("farm-%02v", i+1)
 		CSVData[0] = append(CSVData[0], farmName)
 		farmIndexMap[farmName] = i + 1
@@ -99,10 +155,12 @@ func ScrapeLogs(cfg ScraperCfg) error {
 		CSVFilename = CSVFilename + "-total-plots-summary"
 	} else if cfg.TotalEligiblePlots {
 		CSVFilename = CSVFilename + "-total-eligible-plots-summary"
+	} else if cfg.MaxProofTime {
+		CSVFilename = CSVFilename + "-max-proof-time-summary"
 	}
 
 	for _, file := range files {
-		if !strings.Contains(file, "farm") {
+		if !strings.Contains(file, "farm") || strings.Contains(file, "lock") {
 			continue
 		}
 
@@ -111,23 +169,19 @@ func ScrapeLogs(cfg ScraperCfg) error {
 		farmName := file[lastSlash-7 : lastSlash]
 		csvDataFarmIndex := farmIndexMap[farmName]
 
-		if cfg.Proofs {
-			err = findProofsFound(file, &CSVData, &dateIndexMap, csvDataFarmIndex)
-			if err != nil {
-				return fmt.Errorf("error finding proofs: %v", err)
-			}
-		} else if cfg.TotalPlots {
-			err = findTotalPlots(file, &CSVData, &dateIndexMap, csvDataFarmIndex)
-			if err != nil {
-				return fmt.Errorf("error finding total plots: %v", err)
-			}
-		} else if cfg.TotalEligiblePlots {
-			err = findTotalEligiblePlots(file, &CSVData, &dateIndexMap, csvDataFarmIndex)
-			if err != nil {
-				return fmt.Errorf("error finding total eligible plots: %v", err)
-			}
+		err = processScraping(cfg, file, &CSVData, &processDataMap, &dateIndexMap, csvDataFarmIndex)
+		if err != nil {
+			return fmt.Errorf("error scraping: %v", err)
 		}
 
+	}
+
+	// Process median from process data
+	if cfg.MedianProofTime {
+		err = processMedianProofTime(&CSVData, &processDataMap, &dateIndexMap)
+		if err != nil {
+			return fmt.Errorf("error processing median proof time: %v", err)
+		}
 	}
 
 	if cfg.Print {

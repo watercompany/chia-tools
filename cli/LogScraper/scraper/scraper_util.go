@@ -75,3 +75,20 @@ func getIndexUntilSpaceToTheLeft(line string, start int) int {
 
 	return start
 }
+
+func getMedian(n ...float32) float32 {
+	if len(n) == 0 {
+		return 0
+	}
+
+	// sort
+	sort.Slice(n, func(i, j int) bool { return n[i] < n[j] })
+
+	medianIndex := len(n) / 2
+
+	if len(n)%2 != 0 {
+		return n[medianIndex]
+	}
+
+	return (n[medianIndex-1] + n[medianIndex]) / 2
+}
