@@ -157,6 +157,8 @@ func ScrapeLogs(cfg ScraperCfg) error {
 		CSVFilename = CSVFilename + "-total-eligible-plots-summary"
 	} else if cfg.MaxProofTime {
 		CSVFilename = CSVFilename + "-max-proof-time-summary"
+	} else if cfg.MedianProofTime {
+		CSVFilename = CSVFilename + "-median-proof-time-summary"
 	}
 
 	for _, file := range files {
