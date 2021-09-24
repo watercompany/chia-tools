@@ -1,42 +1,11 @@
 package scraper
 
 import (
-	"fmt"
-	"os"
 	"strings"
 	"time"
 )
 
-func findProofsFound(filePath string, CSVData *[][]string, dateIndexMap *map[string]int, csvDataFarmIndex int) error {
-	file, err := os.Open(filePath)
-	if err != nil {
-		return fmt.Errorf("failed to open log file: %s, skipping reading", err)
-	}
-	defer file.Close()
-
-	stat, err := os.Stat(filePath)
-	if err != nil {
-		return fmt.Errorf("error reading log file: %s, skipping reading", err)
-	}
-
-	if stat.Size() > 0 {
-		buf := make([]byte, stat.Size())
-		_, err = file.ReadAt(buf, int64(0))
-		if err == nil {
-			lines := strings.Split(strings.ReplaceAll(string(buf), "\r\n", "\n"), "\n")
-			err := parseLog(lines, CSVData, dateIndexMap, csvDataFarmIndex)
-			if err != nil {
-				return err
-			}
-		} else {
-			return fmt.Errorf("error when reading bytes from log file: %s", err)
-		}
-	}
-
-	return nil
-}
-
-func parseLog(lines []string, CSVData *[][]string, dateIndexMap *map[string]int, csvDataFarmIndex int) error {
+func parseLogForProofsFound(lines []string, CSVData *[][]string, dateIndexMap *map[string]int, csvDataFarmIndex int) error {
 	s := ""
 
 	for _, line := range lines {
@@ -45,7 +14,7 @@ func parseLog(lines []string, CSVData *[][]string, dateIndexMap *map[string]int,
 		}
 
 		s = line[0:23]
-		lineDate, err := time.Parse("2006-01-02T15:04:05.000", s)
+		lineDate, err := time.Parse(timeFormatFromLogs, s)
 		if err != nil {
 			continue
 		}
