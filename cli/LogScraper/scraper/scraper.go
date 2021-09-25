@@ -169,7 +169,7 @@ func ScrapeLogs(cfg ScraperCfg) error {
 	}
 
 	for _, file := range files {
-		if !strings.Contains(file, "farm") || strings.Contains(file, "lock") {
+		if !strings.Contains(file, "farm") || strings.Contains(file, "lock") || strings.HasPrefix(file, ".") {
 			continue
 		}
 
