@@ -14,6 +14,9 @@ func parseLogForProofsFound(lines []string, CSVData *[][]string, dateIndexMap *m
 		}
 
 		s = line[0:23]
+		if strings.HasPrefix(line, ".") {
+			s = line[1:24]
+		}
 		lineDate, err := time.Parse(timeFormatFromLogs, s)
 		if err != nil {
 			continue
