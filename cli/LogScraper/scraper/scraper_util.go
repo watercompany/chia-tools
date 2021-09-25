@@ -92,3 +92,17 @@ func getMedian(n ...float32) float32 {
 
 	return (n[medianIndex-1] + n[medianIndex]) / 2
 }
+
+func getMean(n ...float32) float32 {
+	var sum float32
+
+	if len(n) == 0 {
+		return 0
+	}
+
+	for _, val := range n {
+		sum = sum + val
+	}
+
+	return sum / float32(len(n))
+}

@@ -95,6 +95,11 @@ func processScraping(cfg ScraperCfg, filePath string, CSVData *[][]string, proce
 				if err != nil {
 					return fmt.Errorf("error finding median proof time: %v", err)
 				}
+			} else if cfg.MeanProofTime {
+				err := parseLogForMeanProofTime(lines, CSVData, processDataMap, dateIndexMap, csvDataFarmIndex)
+				if err != nil {
+					return fmt.Errorf("error finding mean proof time: %v", err)
+				}
 			}
 
 		} else {
@@ -159,10 +164,12 @@ func ScrapeLogs(cfg ScraperCfg) error {
 		CSVFilename = CSVFilename + "-max-proof-time-summary"
 	} else if cfg.MedianProofTime {
 		CSVFilename = CSVFilename + "-median-proof-time-summary"
+	} else if cfg.MeanProofTime {
+		CSVFilename = CSVFilename + "-mean-proof-time-summary"
 	}
 
 	for _, file := range files {
-		if !strings.Contains(file, "farm") || strings.Contains(file, "lock") {
+		if !strings.Contains(file, "farm") || strings.Contains(file, "lock") || strings.HasPrefix(file, ".") {
 			continue
 		}
 
@@ -183,6 +190,13 @@ func ScrapeLogs(cfg ScraperCfg) error {
 		err = processMedianProofTime(&CSVData, &processDataMap, &dateIndexMap)
 		if err != nil {
 			return fmt.Errorf("error processing median proof time: %v", err)
+		}
+	}
+
+	if cfg.MeanProofTime {
+		err = processMeanProofTime(&CSVData, &processDataMap, &dateIndexMap)
+		if err != nil {
+			return fmt.Errorf("error processing mean proof time: %v", err)
 		}
 	}
 
