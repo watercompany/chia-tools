@@ -139,7 +139,11 @@ func ScrapeLogs(cfg ScraperCfg) error {
 
 	strDateIndexStart := strings.LastIndex(files[0], "/") + 1
 	strDateIndexEnd := strDateIndexStart + len(formatTimeStr)
-	oldestDate, err := time.Parse(formatTimeStr, files[0][strDateIndexStart:strDateIndexEnd])
+	timeStr := files[0][strDateIndexStart:strDateIndexEnd]
+	if strings.HasPrefix(timeStr, ".") {
+		timeStr = files[0][strDateIndexStart+1 : strDateIndexEnd+1]
+	}
+	oldestDate, err := time.Parse(formatTimeStr, timeStr)
 	if err != nil {
 		return fmt.Errorf("error parsing time: %v", err)
 	}
