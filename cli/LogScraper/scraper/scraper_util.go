@@ -106,3 +106,21 @@ func getMean(n ...float32) float32 {
 
 	return sum / float32(len(n))
 }
+
+// getPercentOfN gets the percentage of
+// how many instances of less than N in the array
+func getPercentOfN(N float32, nArr ...float32) float32 {
+	lenArray := len(nArr)
+	if lenArray == 0 {
+		return 0
+	}
+
+	var count float32 = 0
+	for _, val := range nArr {
+		if val < N {
+			count++
+		}
+	}
+
+	return (count / float32(lenArray)) * 100
+}

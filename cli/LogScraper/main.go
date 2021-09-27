@@ -18,6 +18,7 @@ var (
 	maxProofTime       *bool
 	medianProofTime    *bool
 	meanProofTime      *bool
+	percentProofTime   int
 
 	save  *bool
 	print *bool
@@ -33,6 +34,7 @@ func init() {
 	maxProofTime = flag.Bool("max-proof-time", false, "set if tool will scrape for max proof time")
 	medianProofTime = flag.Bool("median-proof-time", false, "set if tool will scrape for median proof time")
 	meanProofTime = flag.Bool("mean-proof-time", false, "set if tool will scrape for mean proof time")
+	flag.IntVar(&percentProofTime, "percent-proof-time", 0, "Set N to get percentage of proof time instances less than N")
 
 	save = flag.Bool("save", false, "set if csv will be saved")
 	print = flag.Bool("print", false, "set if summary will be printed")
@@ -83,6 +85,7 @@ func main() {
 		MaxProofTime:       *maxProofTime,
 		MedianProofTime:    *medianProofTime,
 		MeanProofTime:      *meanProofTime,
+		PercentProofTime:   percentProofTime,
 	}
 
 	err := scraper.ScrapeLogs(scraperCfg)
