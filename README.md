@@ -21,6 +21,7 @@ sudo go run ./cli/LogScraper/main.go
 -median-proof-time [Set if tool will scrape for median proof time]
 -mean-proof-time [Set if tool will scrape for mean proof time]
 -percent-proof-time [Set N to get percentage of proof time instances less than N]
+gaps-proof-checks [Set N to get number of instances where proof check time gaps is greater or equal than N]
 -save [Set if csv file will be saved to the dest dir] 
 -print [Set if summary will be printed in the cli]
 ```
