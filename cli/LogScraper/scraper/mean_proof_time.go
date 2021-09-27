@@ -7,7 +7,7 @@ import (
 	"time"
 )
 
-func parseLogForMeanProofTime(lines []string, CSVData *[][]string, processDataMap *map[FarmDateMap][]float32, dateIndexMap *map[string]int, csvDataFarmIndex int) error {
+func parseLogForMeanProofTime(lines []string, CSVData *[][]string, processDataMap *map[FarmDateMap][]float64, dateIndexMap *map[string]int, csvDataFarmIndex int) error {
 	s := ""
 
 	for _, line := range lines {
@@ -30,7 +30,7 @@ func parseLogForMeanProofTime(lines []string, CSVData *[][]string, processDataMa
 			}
 
 			// add proof time
-			(*processDataMap)[FarmDateMap{FarmIndex: csvDataFarmIndex, Date: lineDateStr}] = append((*processDataMap)[FarmDateMap{FarmIndex: csvDataFarmIndex, Date: lineDateStr}], float32(proofTime))
+			(*processDataMap)[FarmDateMap{FarmIndex: csvDataFarmIndex, Date: lineDateStr}] = append((*processDataMap)[FarmDateMap{FarmIndex: csvDataFarmIndex, Date: lineDateStr}], float64(proofTime))
 
 		}
 
@@ -38,7 +38,21 @@ func parseLogForMeanProofTime(lines []string, CSVData *[][]string, processDataMa
 	return nil
 }
 
-func processMeanProofTime(CSVData *[][]string, processDataMap *map[FarmDateMap][]float32, dateIndexMap *map[string]int) error {
+func getMean(n ...float64) float64 {
+	var sum float64
+
+	if len(n) == 0 {
+		return 0
+	}
+
+	for _, val := range n {
+		sum = sum + val
+	}
+
+	return sum / float64(len(n))
+}
+
+func processMeanProofTime(CSVData *[][]string, processDataMap *map[FarmDateMap][]float64, dateIndexMap *map[string]int) error {
 	for i, farm := range *CSVData {
 		if i == 0 {
 			continue

@@ -52,7 +52,7 @@ func saveCSV(data [][]string, dest string) error {
 	return nil
 }
 
-func processScraping(cfg ScraperCfg, filePath string, CSVData *[][]string, processDataMap *map[FarmDateMap][]float32, dateIndexMap *map[string]int, csvDataFarmIndex int) error {
+func processScraping(cfg ScraperCfg, filePath string, CSVData *[][]string, processDataMap *map[FarmDateMap][]float64, dateIndexMap *map[string]int, csvDataFarmIndex int) error {
 	file, err := os.Open(filePath)
 	if err != nil {
 		return fmt.Errorf("failed to open log file: %s, skipping reading", err)
@@ -105,6 +105,11 @@ func processScraping(cfg ScraperCfg, filePath string, CSVData *[][]string, proce
 				if err != nil {
 					return fmt.Errorf("error finding percent proof time: %v", err)
 				}
+			} else if cfg.GapsProofChecks != 0 {
+				err := parseLogForGapsProofTime(lines, CSVData, processDataMap, dateIndexMap, csvDataFarmIndex)
+				if err != nil {
+					return fmt.Errorf("error finding gaps proof checks: %v", err)
+				}
 			}
 
 		} else {
@@ -117,7 +122,7 @@ func processScraping(cfg ScraperCfg, filePath string, CSVData *[][]string, proce
 
 func ScrapeLogs(cfg ScraperCfg) error {
 	var CSVData = [][]string{}
-	var processDataMap = make(map[FarmDateMap][]float32)
+	var processDataMap = make(map[FarmDateMap][]float64)
 	dateIndexMap := make(map[string]int)
 	farmIndexMap := make(map[string]int)
 	CSVFilename := cfg.DestDir + time.Now().Format(formatTimeStr)
@@ -177,6 +182,8 @@ func ScrapeLogs(cfg ScraperCfg) error {
 		CSVFilename = CSVFilename + "-mean-proof-time-summary"
 	} else if cfg.PercentProofTime != 0 {
 		CSVFilename = CSVFilename + "-percent-proof-time-summary"
+	} else if cfg.GapsProofChecks != 0 {
+		CSVFilename = CSVFilename + "-gaps-proof-checks-summary"
 	}
 
 	for _, file := range files {
@@ -208,9 +215,14 @@ func ScrapeLogs(cfg ScraperCfg) error {
 			return fmt.Errorf("error processing mean proof time: %v", err)
 		}
 	} else if cfg.PercentProofTime != 0 {
-		err = processPercentProofTime(float32(cfg.PercentProofTime), &CSVData, &processDataMap, &dateIndexMap)
+		err = processPercentProofTime(float64(cfg.PercentProofTime), &CSVData, &processDataMap, &dateIndexMap)
 		if err != nil {
 			return fmt.Errorf("error processing percent proof time: %v", err)
+		}
+	} else if cfg.GapsProofChecks != 0 {
+		err = processGapsProofTime(float64(cfg.GapsProofChecks), &CSVData, &processDataMap, &dateIndexMap)
+		if err != nil {
+			return fmt.Errorf("error processing gaps proof checks: %v", err)
 		}
 	}
 

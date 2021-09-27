@@ -19,6 +19,7 @@ var (
 	medianProofTime    *bool
 	meanProofTime      *bool
 	percentProofTime   int
+	gapsProofChecks    int
 
 	save  *bool
 	print *bool
@@ -35,6 +36,7 @@ func init() {
 	medianProofTime = flag.Bool("median-proof-time", false, "set if tool will scrape for median proof time")
 	meanProofTime = flag.Bool("mean-proof-time", false, "set if tool will scrape for mean proof time")
 	flag.IntVar(&percentProofTime, "percent-proof-time", 0, "Set N to get percentage of proof time instances less than N")
+	flag.IntVar(&gapsProofChecks, "gaps-proof-checks", 0, "Set N to get number of instances where proof check time gaps is greater or equal than N")
 
 	save = flag.Bool("save", false, "set if csv will be saved")
 	print = flag.Bool("print", false, "set if summary will be printed")
@@ -86,6 +88,7 @@ func main() {
 		MedianProofTime:    *medianProofTime,
 		MeanProofTime:      *meanProofTime,
 		PercentProofTime:   percentProofTime,
+		GapsProofChecks:    gapsProofChecks,
 	}
 
 	err := scraper.ScrapeLogs(scraperCfg)

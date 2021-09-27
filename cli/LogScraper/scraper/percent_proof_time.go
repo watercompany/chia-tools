@@ -7,7 +7,7 @@ import (
 	"time"
 )
 
-func parseLogForPercentProofTime(lines []string, CSVData *[][]string, processDataMap *map[FarmDateMap][]float32, dateIndexMap *map[string]int, csvDataFarmIndex int) error {
+func parseLogForPercentProofTime(lines []string, CSVData *[][]string, processDataMap *map[FarmDateMap][]float64, dateIndexMap *map[string]int, csvDataFarmIndex int) error {
 	s := ""
 
 	for _, line := range lines {
@@ -30,7 +30,7 @@ func parseLogForPercentProofTime(lines []string, CSVData *[][]string, processDat
 			}
 
 			// add proof time
-			(*processDataMap)[FarmDateMap{FarmIndex: csvDataFarmIndex, Date: lineDateStr}] = append((*processDataMap)[FarmDateMap{FarmIndex: csvDataFarmIndex, Date: lineDateStr}], float32(proofTime))
+			(*processDataMap)[FarmDateMap{FarmIndex: csvDataFarmIndex, Date: lineDateStr}] = append((*processDataMap)[FarmDateMap{FarmIndex: csvDataFarmIndex, Date: lineDateStr}], float64(proofTime))
 
 		}
 
@@ -38,7 +38,25 @@ func parseLogForPercentProofTime(lines []string, CSVData *[][]string, processDat
 	return nil
 }
 
-func processPercentProofTime(lessThanTime float32, CSVData *[][]string, processDataMap *map[FarmDateMap][]float32, dateIndexMap *map[string]int) error {
+// getPercentOfN gets the percentage of
+// how many instances of less than N in the array
+func getPercentOfN(N float64, nArr ...float64) float32 {
+	lenArray := len(nArr)
+	if lenArray == 0 {
+		return 0
+	}
+
+	var count float32 = 0
+	for _, val := range nArr {
+		if val < float64(N) {
+			count++
+		}
+	}
+
+	return (count / float32(lenArray)) * 100
+}
+
+func processPercentProofTime(lessThanTime float64, CSVData *[][]string, processDataMap *map[FarmDateMap][]float64, dateIndexMap *map[string]int) error {
 	for i, farm := range *CSVData {
 		if i == 0 {
 			continue
@@ -49,11 +67,8 @@ func processPercentProofTime(lessThanTime float32, CSVData *[][]string, processD
 			}
 			date := farm[0]
 
-			median := getPercentOfN(lessThanTime, (*processDataMap)[FarmDateMap{FarmIndex: x, Date: date}]...)
-			if median == 0 {
-				continue
-			}
-			newVal := fmt.Sprintf("%.1f%%", median)
+			percentOfN := getPercentOfN(lessThanTime, (*processDataMap)[FarmDateMap{FarmIndex: x, Date: date}]...)
+			newVal := fmt.Sprintf("%.1f%%", percentOfN)
 
 			// Have to manually add 0 padding
 			// because %4.1f doesnt work
