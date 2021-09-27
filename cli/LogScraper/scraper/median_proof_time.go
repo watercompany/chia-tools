@@ -2,12 +2,13 @@ package scraper
 
 import (
 	"fmt"
+	"sort"
 	"strconv"
 	"strings"
 	"time"
 )
 
-func parseLogForMedianProofTime(lines []string, CSVData *[][]string, processDataMap *map[FarmDateMap][]float32, dateIndexMap *map[string]int, csvDataFarmIndex int) error {
+func parseLogForMedianProofTime(lines []string, CSVData *[][]string, processDataMap *map[FarmDateMap][]float64, dateIndexMap *map[string]int, csvDataFarmIndex int) error {
 	s := ""
 
 	for _, line := range lines {
@@ -30,7 +31,7 @@ func parseLogForMedianProofTime(lines []string, CSVData *[][]string, processData
 			}
 
 			// add proof time
-			(*processDataMap)[FarmDateMap{FarmIndex: csvDataFarmIndex, Date: lineDateStr}] = append((*processDataMap)[FarmDateMap{FarmIndex: csvDataFarmIndex, Date: lineDateStr}], float32(proofTime))
+			(*processDataMap)[FarmDateMap{FarmIndex: csvDataFarmIndex, Date: lineDateStr}] = append((*processDataMap)[FarmDateMap{FarmIndex: csvDataFarmIndex, Date: lineDateStr}], float64(proofTime))
 
 		}
 
@@ -38,7 +39,24 @@ func parseLogForMedianProofTime(lines []string, CSVData *[][]string, processData
 	return nil
 }
 
-func processMedianProofTime(CSVData *[][]string, processDataMap *map[FarmDateMap][]float32, dateIndexMap *map[string]int) error {
+func getMedian(n ...float64) float64 {
+	if len(n) == 0 {
+		return 0
+	}
+
+	// sort
+	sort.Slice(n, func(i, j int) bool { return n[i] < n[j] })
+
+	medianIndex := len(n) / 2
+
+	if len(n)%2 != 0 {
+		return n[medianIndex]
+	}
+
+	return (n[medianIndex-1] + n[medianIndex]) / 2
+}
+
+func processMedianProofTime(CSVData *[][]string, processDataMap *map[FarmDateMap][]float64, dateIndexMap *map[string]int) error {
 	for i, farm := range *CSVData {
 		if i == 0 {
 			continue

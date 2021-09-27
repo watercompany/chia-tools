@@ -13,6 +13,7 @@ type ScraperCfg struct {
 	MedianProofTime    bool
 	MeanProofTime      bool
 	PercentProofTime   int
+	GapsProofChecks    int
 }
 
 type FarmDateMap struct {
