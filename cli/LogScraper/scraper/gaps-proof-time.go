@@ -41,7 +41,6 @@ func getGapsCount(N float64, nArr ...float64) int {
 	// sort
 	sort.Slice(nArr, func(i, j int) bool { return nArr[i] < nArr[j] })
 
-	fmt.Printf("arr=%v\n\n", nArr)
 	var count int = 0
 	var prev float64 = 0
 	for x, val := range nArr {
@@ -73,14 +72,6 @@ func processGapsProofTime(gapTime float64, CSVData *[][]string, processDataMap *
 
 			gapsCount := getGapsCount(gapTime, (*processDataMap)[FarmDateMap{FarmIndex: x, Date: date}]...)
 			newVal := fmt.Sprintf("%07v", gapsCount)
-
-			// // Have to manually add 0 padding
-			// diffLen := 7 - len(newVal)
-			// if diffLen != 0 {
-			// 	for i := 0; i < diffLen; i++ {
-			// 		newVal = "0" + newVal
-			// 	}
-			// }
 
 			(*CSVData)[i][x] = newVal
 		}
