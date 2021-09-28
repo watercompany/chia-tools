@@ -1,6 +1,8 @@
 package scraper
 
 import (
+	"fmt"
+	"strconv"
 	"strings"
 	"time"
 )
@@ -21,7 +23,16 @@ func parseLogForProofsFound(lines []string, CSVData *[][]string, dateIndexMap *m
 
 		lineDateStr := lineDate.Format(formatTimeStr)
 		if strings.Contains(line, "Found 1") {
-			(*CSVData)[(*dateIndexMap)[lineDateStr]][csvDataFarmIndex] = proofFound
+			currentTotalProofsStr := (*CSVData)[(*dateIndexMap)[lineDateStr]][csvDataFarmIndex]
+			if currentTotalProofsStr == valuePlaceholder {
+				currentTotalProofsStr = "0"
+			}
+			currentTotalProofs, err := strconv.Atoi(currentTotalProofsStr)
+			if err != nil {
+				return err
+			}
+			(*CSVData)[(*dateIndexMap)[lineDateStr]][csvDataFarmIndex] = fmt.Sprintf("---%v---", currentTotalProofs+1)
+
 		}
 
 	}

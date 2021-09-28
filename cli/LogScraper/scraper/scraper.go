@@ -11,7 +11,6 @@ import (
 
 const (
 	valuePlaceholder   = "-------"
-	proofFound         = "---1---"
 	formatTimeStr      = "2006-01-02"
 	timeFormatFromLogs = "2006-01-02T15:04:05.000"
 )
