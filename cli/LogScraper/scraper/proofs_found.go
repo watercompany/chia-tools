@@ -26,6 +26,8 @@ func parseLogForProofsFound(lines []string, CSVData *[][]string, dateIndexMap *m
 			currentTotalProofsStr := (*CSVData)[(*dateIndexMap)[lineDateStr]][csvDataFarmIndex]
 			if currentTotalProofsStr == valuePlaceholder {
 				currentTotalProofsStr = "0"
+			} else {
+				currentTotalProofsStr = currentTotalProofsStr[3:4]
 			}
 			currentTotalProofs, err := strconv.Atoi(currentTotalProofsStr)
 			if err != nil {
