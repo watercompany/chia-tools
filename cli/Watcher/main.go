@@ -4,6 +4,7 @@ import (
 	"chia-tools/cli/Watcher/telegrambot"
 	"flag"
 	"fmt"
+	"io/ioutil"
 	"os"
 	"strings"
 	"time"
@@ -13,7 +14,6 @@ var (
 	srcPath  string
 	botToken string
 	chatID   string
-	farmName string
 )
 
 const (
@@ -22,10 +22,9 @@ const (
 )
 
 func init() {
-	flag.StringVar(&srcPath, "src", "/home/cf/.chia/mainnet/log", "Directory that contains the chia debug logs")
+	flag.StringVar(&srcPath, "src", "~/chia-farm-logs", "Directory that contains the chia debug logs")
 	flag.StringVar(&botToken, "bot-token", "", "Telegram bot token to be used for sending message to telegram")
 	flag.StringVar(&chatID, "chat-id", "", "Telegram chat id of where the message to be sent")
-	flag.StringVar(&farmName, "farm-name", "farm-0", "Farm name of where the tool is running")
 
 }
 
@@ -41,43 +40,50 @@ func main() {
 		os.Exit(1)
 	}
 
-	srcPath = srcPath + logName
+	farmFoldersCount, err := countFarmFolders(srcPath)
+	if err != nil {
+		fmt.Printf("error counting farm folders: %v", err)
+		os.Exit(1)
+	}
 
 	var proofsFoundHistory []string
-	var lastProofCheckTimeHistory int64
+	lastProofCheckTimeHistory := make([]int64, farmFoldersCount)
 	for {
-		foundProofsArr, lastProofCheckTime, err := processScraping(srcPath)
-		if err != nil {
-			fmt.Printf("error running watcher: %v", err)
-			os.Exit(1)
-		}
-
-		for _, val := range foundProofsArr {
-			if !isExistInArray(val, proofsFoundHistory) {
-				proofsFoundHistory = append(proofsFoundHistory, val)
-				err := telegrambot.SendMessage(botToken, chatID, fmt.Sprintf("%s: %s", farmName, val))
-				if err != nil {
-					fmt.Printf("error sending message to telegram: %v", err)
-					os.Exit(1)
-				}
+		for i := 1; i <= farmFoldersCount; i++ {
+			farmName := fmt.Sprintf("farm-%02v", i)
+			foundProofsArr, lastProofCheckTime, err := processScraping(srcPath + farmName + "/debug.log")
+			if err != nil {
+				fmt.Printf("error running watcher: %v", err)
+				os.Exit(1)
 			}
-		}
 
-		if lastProofCheckTimeHistory != lastProofCheckTime.Unix() {
-			// if more than 15 minutes, send outage message
-			if time.Now().Unix()-lastProofCheckTime.Unix() > (60 * 15) {
-				err := telegrambot.SendMessage(botToken, chatID, fmt.Sprintf("WARNING: %s: It has been more than 15 minutes since last proof check (%v)", farmName, lastProofCheckTime))
-				if err != nil {
-					fmt.Printf("error sending message to telegram: %v", err)
-					os.Exit(1)
+			for _, val := range foundProofsArr {
+				if !isExistInArray(val, proofsFoundHistory) {
+					proofsFoundHistory = append(proofsFoundHistory, val)
+					err := telegrambot.SendMessage(botToken, chatID, fmt.Sprintf("%s: %s", farmName, val))
+					if err != nil {
+						fmt.Printf("error sending message to telegram: %v", err)
+						os.Exit(1)
+					}
 				}
 			}
 
-			lastProofCheckTimeHistory = lastProofCheckTime.Unix()
+			if lastProofCheckTimeHistory[i] != lastProofCheckTime.Unix() {
+				// if more than 15 minutes, send outage message
+				if time.Now().Unix()-lastProofCheckTime.Unix() > (60 * 15) {
+					err := telegrambot.SendMessage(botToken, chatID, fmt.Sprintf("WARNING: %s: It has been more than 15 minutes since last proof check (%v)", farmName, lastProofCheckTime))
+					if err != nil {
+						fmt.Printf("error sending message to telegram: %v", err)
+						os.Exit(1)
+					}
+				}
+
+				lastProofCheckTimeHistory[i] = lastProofCheckTime.Unix()
+			}
 		}
 
 		time.Sleep(60 * time.Second)
-		if len(proofsFoundHistory) > 100 {
+		if len(proofsFoundHistory) > farmFoldersCount*3 {
 			proofsFoundHistory = []string{}
 		}
 	}
@@ -91,6 +97,22 @@ func isExistInArray(n string, nArr []string) bool {
 		}
 	}
 	return false
+}
+
+func countFarmFolders(logDir string) (int, error) {
+	files, err := ioutil.ReadDir(logDir)
+	if err != nil {
+		return 0, err
+	}
+
+	count := 0
+	for _, file := range files {
+		if file.IsDir() && strings.Contains(file.Name(), "farm") {
+			count++
+		}
+	}
+
+	return count, nil
 }
 
 func isPathExist(path string) bool {
