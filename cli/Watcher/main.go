@@ -47,7 +47,7 @@ func main() {
 	}
 
 	var proofsFoundHistory []string
-	lastProofCheckTimeHistory := make([]int64, farmFoldersCount)
+	lastProofCheckTimeHistory := make([]int64, farmFoldersCount+1)
 	for {
 		for i := 1; i <= farmFoldersCount; i++ {
 			farmName := fmt.Sprintf("farm-%02v", i)
