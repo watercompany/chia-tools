@@ -14,8 +14,8 @@ func TestSendMessage(t *testing.T) {
 	}{
 		{
 			scenario: "Send Normal Message",
-			token:    "2014244690:AAFhWLw0fxwOhVHdIzdxmsVtNIYjqBEGRmA", // put bot token id here before starting test
-			chatID:   "chiaupdateswatercompany",                        // put chat id here before starting test
+			token:    "", // put bot token id here before starting test
+			chatID:   "", // put chat id here before starting test
 			message:  "Test Message from tool.",
 		},
 	}
