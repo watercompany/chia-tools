@@ -14,7 +14,6 @@ var (
 	srcPath  string
 	botToken string
 	chatID   string
-	farmName string
 )
 
 const (
