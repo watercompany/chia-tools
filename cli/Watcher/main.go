@@ -77,6 +77,9 @@ func main() {
 		}
 
 		time.Sleep(60 * time.Second)
+		if len(proofsFoundHistory) > 100 {
+			proofsFoundHistory = []string{}
+		}
 	}
 
 }
