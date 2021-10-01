@@ -47,7 +47,7 @@ func main() {
 	}
 
 	var proofsFoundHistory []string
-	lastProofCheckTimeHistory := make([]int64, farmFoldersCount+1)
+	lastProofCheckTimeHistory := make([]time.Time, farmFoldersCount+1)
 	for {
 		for i := 1; i <= farmFoldersCount; i++ {
 			farmName := fmt.Sprintf("farm-%02v", i)
@@ -68,18 +68,20 @@ func main() {
 				}
 			}
 
-			if lastProofCheckTimeHistory[i] != lastProofCheckTime.Unix() {
-				// if more than 15 minutes, send outage message
-				if time.Now().Unix()-lastProofCheckTime.Unix() > (60 * 15) {
-					err := telegrambot.SendMessage(botToken, chatID, fmt.Sprintf("WARNING: %s: It has been more than 15 minutes since last proof check (%v)", farmName, lastProofCheckTime))
-					if err != nil {
-						fmt.Printf("error sending message to telegram: %v", err)
-						os.Exit(1)
-					}
-				}
-
-				lastProofCheckTimeHistory[i] = lastProofCheckTime.Unix()
+			if lastProofCheckTime == (time.Time{}) {
+				lastProofCheckTime = lastProofCheckTimeHistory[i]
 			}
+			// if more than 15 minutes, send outage message
+			if (time.Now().Unix()-lastProofCheckTime.Unix() > (60 * 15)) && lastProofCheckTimeHistory[i].Unix() != lastProofCheckTime.Unix() {
+				err := telegrambot.SendMessage(botToken, chatID, fmt.Sprintf("WARNING: %s: It has been more than 15 minutes since last proof check (%v)", farmName, lastProofCheckTime))
+				if err != nil {
+					fmt.Printf("error sending message to telegram: %v", err)
+					os.Exit(1)
+				}
+			}
+
+			lastProofCheckTimeHistory[i] = lastProofCheckTime
+
 		}
 
 		time.Sleep(60 * time.Second)
