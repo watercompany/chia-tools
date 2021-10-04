@@ -32,3 +32,17 @@ Example command:
 ```
 sudo go run ./cli/LogScraper/main.go -src /mnt/skynas-log/HarvesterLog -dest /mnt/skynas-log/HarvesterLog/summary -wins -print -save
 ```
+
+## Watcher
+Watcher is a telegram bot that will send a message to a telegram chat group whenever there's proof found or when there are no proof checks for more than 15 minutes.
+
+Command:
+```
+sudo go run ./cli/Watcher/main.go 
+-src [Set source of live logs that will be scraped and monitored]
+-bot-token [Set telegram bot token]
+-chat-id [Set telegram chat id]
+```
+Note:
+Source Directory must be a directory that contain folders "farm-01", "farm-02", "farm-03", and so on which then contains the actual harvester logs.
+
