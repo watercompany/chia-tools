@@ -1,13 +1,28 @@
 # chia-tools
 
 ## LogPlumber  
-        check timestamp order and copy log files from source to destination, sample run: go run main.go setTargets "/home/mike/.chia/mainnet/log/" "/home/mike/logtemp/"
+LogPlumber checks timestamp order and copy log files from source to destination.
+
+Command:
+```
+go run main.go setTargets [Source] [Destination]
+```
+
+Sample run: 
+```
+go run main.go setTargets "/home/mike/.chia/mainnet/log/" "/home/mike/logtemp/"
+```
 
 ## LogScraper
 LogScraper scrapes data from the logs. These data can be
 1. Proofs found
 2. Total eligible plots
 3. Total plots
+4. Max proof time
+5. Median proof time
+6. Mean proof time
+7. Percent proof time
+8. Gaps proof checks
 
 To get proofs found, use:
 ```
@@ -21,7 +36,7 @@ sudo go run ./cli/LogScraper/main.go
 -median-proof-time [Set if tool will scrape for median proof time]
 -mean-proof-time [Set if tool will scrape for mean proof time]
 -percent-proof-time [Set N to get percentage of proof time instances less than N]
-gaps-proof-checks [Set N to get number of instances where proof check time gaps is greater or equal than N]
+-gaps-proof-checks [Set N to get number of instances where proof check time gaps is greater or equal than N]
 -save [Set if csv file will be saved to the dest dir] 
 -print [Set if summary will be printed in the cli]
 ```
