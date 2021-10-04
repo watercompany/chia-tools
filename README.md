@@ -29,6 +29,7 @@ To get proofs found, use:
 sudo go run ./cli/LogScraper/main.go 
 -src [Directory that contains the harvester logs] 
 -dest [Destination directory of saved csv] 
+
 -proofs [Set if data scraped will be proofs found] 
 -total-plots [Set if tool will scrape for minimum total plots]
 -total-eligible-plots [Set if tool will scrape for total eligible plots]
@@ -37,6 +38,7 @@ sudo go run ./cli/LogScraper/main.go
 -mean-proof-time [Set if tool will scrape for mean proof time]
 -percent-proof-time [Set N to get percentage of proof time instances less than N]
 -gaps-proof-checks [Set N to get number of instances where proof check time gaps is greater or equal than N]
+
 -save [Set if csv file will be saved to the dest dir] 
 -print [Set if summary will be printed in the cli]
 ```
@@ -54,9 +56,9 @@ Watcher is a telegram bot that will send a message to a telegram chat group when
 Command:
 ```
 sudo go run ./cli/Watcher/main.go 
--src [Set source of live logs that will be scraped and monitored]
--bot-token [Set telegram bot token]
--chat-id [Set telegram chat id]
+-src [Source of live logs that will be scraped and monitored]
+-bot-token [Telegram bot token]
+-chat-id [Telegram chat id]
 ```
 Note:
 Source Directory must be a directory that contain folders "farm-01", "farm-02", "farm-03", and so on which then contains the actual harvester logs.
