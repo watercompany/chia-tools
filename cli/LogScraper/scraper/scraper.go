@@ -186,13 +186,20 @@ func ScrapeLogs(cfg ScraperCfg) error {
 	}
 
 	for _, file := range files {
-		if !strings.Contains(file, "farm") || strings.Contains(file, "lock") || strings.Contains(file, "live") {
+		if !strings.Contains(file, "farm") || strings.Contains(file, "lock") {
 			continue
 		}
 
 		// Get farm name
 		lastSlash := strings.LastIndex(file, "/")
 		farmName := file[lastSlash-7 : lastSlash]
+
+		if strings.Contains(file, "live") {
+			// farm-00/live -> 12 characters
+			// farm-00 -> 7 characters
+			farmName = file[lastSlash-12 : lastSlash-7]
+		}
+
 		csvDataFarmIndex := farmIndexMap[farmName]
 
 		err = processScraping(cfg, file, &CSVData, &processDataMap, &dateIndexMap, csvDataFarmIndex)
