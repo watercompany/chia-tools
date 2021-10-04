@@ -197,7 +197,7 @@ func ScrapeLogs(cfg ScraperCfg) error {
 		if strings.Contains(file, "live") {
 			// farm-00/live -> 12 characters
 			// farm-00 -> 7 characters
-			farmName = file[lastSlash-12 : lastSlash-7]
+			farmName = file[lastSlash-12 : lastSlash-5]
 		}
 
 		csvDataFarmIndex := farmIndexMap[farmName]
