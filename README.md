@@ -47,7 +47,7 @@ Source Directory must be a directory that contain folders "farm-01", "farm-02", 
 
 Example command:
 ```
-sudo go run ./cli/LogScraper/main.go -src /mnt/skynas-log/HarvesterLog -dest /mnt/skynas-log/HarvesterLog/summary -wins -print -save
+sudo go run ./cli/LogScraper/main.go -src /mnt/skynas-log/HarvesterLog -dest /mnt/skynas-log/HarvesterLog/summary -proofs -print -save
 ```
 
 ## Watcher
