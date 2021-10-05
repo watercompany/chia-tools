@@ -17,7 +17,7 @@ var (
 )
 
 const (
-	timeFormatFromLogs = "2006-01-02T15:04:05.000Z07:00"
+	timeFormatFromLogs = "2006-01-02T15:04:05Z07:00"
 	logName            = "debug.log"
 )
 
@@ -161,10 +161,11 @@ func getLastProofCheckTime(lines []string) (time.Time, error) {
 			continue
 		}
 
-		s := line[0:23]
+		s := line[0:19]
 		// Manually add UTC+8 because
 		// chia logs doesnt put UTC
 		s = s + "Z08:00"
+
 		lineDate, err := time.Parse(timeFormatFromLogs, s)
 		if err != nil {
 			continue
