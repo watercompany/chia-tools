@@ -164,7 +164,7 @@ func getLastProofCheckTime(lines []string) (time.Time, error) {
 		s := line[0:19]
 		// Manually add UTC+8 because
 		// chia logs doesnt put UTC
-		s = s + "Z08:00"
+		s = s + "+08:00"
 
 		lineDate, err := time.Parse(timeFormatFromLogs, s)
 		if err != nil {
