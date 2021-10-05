@@ -69,7 +69,7 @@ func main() {
 				}
 			}
 
-			lastProofCheckTimeSeconds := lastProofCheckTime.Unix()
+			lastProofCheckTimeSeconds := lastProofCheckTime.UTC().Unix()
 			if lastProofCheckTime == (time.Time{}) {
 				lastProofCheckTimeSeconds = lastProofCheckTimeHistory[i]
 			}
@@ -78,9 +78,11 @@ func main() {
 				sentErrorMsg[i] = false
 			}
 			// if more than 15 minutes, send outage message
-			timeNowUTC8Unix := time.Now().UTC().Add(time.Hour * time.Duration(8)).Unix()
+			timeNowUTC8Unix := time.Now().UTC().Unix()
 			if timeNowUTC8Unix-lastProofCheckTimeHistory[i] > (60*15) && !sentErrorMsg[i] && lastProofCheckTimeHistory[i] != 0 {
-				err := telegrambot.SendMessage(botToken, chatID, fmt.Sprintf("WARNING: %s: It has been more than 15 minutes since last proof check (%v)", farmName, time.Unix(lastProofCheckTimeHistory[i], 0)))
+				loc, _ := time.LoadLocation("Asia/Shanghai")
+
+				err := telegrambot.SendMessage(botToken, chatID, fmt.Sprintf("WARNING: %s: It has been more than 15 minutes since last proof check (%v)", farmName, time.Unix(lastProofCheckTimeHistory[i], 0).In(loc)))
 				if err != nil {
 					fmt.Printf("error sending message to telegram: %v", err)
 					os.Exit(1)
