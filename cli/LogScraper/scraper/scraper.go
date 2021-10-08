@@ -236,7 +236,7 @@ func ScrapeLogs(cfg ScraperCfg) error {
 		for _, line := range CSVData {
 			fmt.Println(line)
 		}
-		fmt.Println(CSVData[0][0])
+		fmt.Println(CSVData[0])
 	}
 
 	if cfg.Save {
