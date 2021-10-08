@@ -146,13 +146,13 @@ func ScrapeLogs(cfg ScraperCfg) error {
 		return fmt.Errorf("error reading directory: %v", err)
 	}
 
-	strDateIndexStart := strings.LastIndex(files[0], "/") + 1
-	strDateIndexEnd := strDateIndexStart + len(formatTimeStr)
-	timeStr := files[0][strDateIndexStart:strDateIndexEnd]
-	if strings.HasPrefix(timeStr, ".") {
-		timeStr = files[0][strDateIndexStart+1 : strDateIndexEnd+1]
-	}
-	oldestDate, err := time.Parse(formatTimeStr, timeStr)
+	// strDateIndexStart := strings.LastIndex(files[0], "/") + 1
+	// strDateIndexEnd := strDateIndexStart + len(formatTimeStr)
+	// timeStr := files[0][strDateIndexStart:strDateIndexEnd]
+	// if strings.HasPrefix(timeStr, ".") {
+	// 	timeStr = files[0][strDateIndexStart+1 : strDateIndexEnd+1]
+	// }
+	oldestDate, err := time.Parse(formatTimeStr, "2021-08-07")
 	if err != nil {
 		return fmt.Errorf("error parsing time: %v", err)
 	}
