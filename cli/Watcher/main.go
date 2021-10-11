@@ -82,7 +82,12 @@ func main() {
 			if timeNowUTC8Unix-lastProofCheckTimeHistory[i] > (60*15) && !sentErrorMsg[i] && lastProofCheckTimeHistory[i] != 0 {
 				timeStr := fmt.Sprintf("%v", time.Unix(lastProofCheckTimeHistory[i], 0).UTC().Add(time.Hour*time.Duration(8)))
 				timeStr = timeStr[:len(timeStr)-9] + "0800 UTC"
-				err := telegrambot.SendMessage(botToken, chatID, fmt.Sprintf("WARNING: %s: It has been more than 15 minutes since last proof check (%s)", farmName, timeStr))
+				msg := fmt.Sprintf("WARNING: %s: It has been more than 15 minutes since last proof check (%s)", farmName, timeStr)
+
+				if timeNowUTC8Unix-lastProofCheckTimeHistory[i] > (60*15) && timeNowUTC8Unix-lastProofCheckTimeSeconds < (60*15) {
+					msg = fmt.Sprintf("INFO: %s: harvester has started doing plot checks", farmName)
+				}
+				err := telegrambot.SendMessage(botToken, chatID, msg)
 				if err != nil {
 					fmt.Printf("error sending message to telegram: %v", err)
 					os.Exit(1)
