@@ -177,7 +177,7 @@ func getLastProofCheckTime(lines []string) (time.Time, error) {
 		if err != nil {
 			continue
 		}
-		if strings.Contains(line, "Found 0") {
+		if strings.Contains(line, "Found 0") && !strings.Contains(line, "0 plots were eligible for farming") {
 			lastProofCheck = lineDate
 			break
 		}
