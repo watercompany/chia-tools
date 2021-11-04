@@ -205,12 +205,20 @@ func ScrapeLogs(cfg ScraperCfg) error {
 		if !strings.Contains(file, "farm") || strings.Contains(file, "lock") || !(strings.HasSuffix(file, "txt") || strings.HasSuffix(file, "log")) {
 			continue
 		}
-
+		fileDate := time.Time{}
 		if cfg.StartDate != "" {
 			lastSlash := strings.LastIndex(file, "/")
-			fileDate, err := time.Parse(formatTimeStr, file[lastSlash+1:lastSlash+11])
-			if err != nil {
-				return fmt.Errorf("error parsing time: %v: %v", err, file)
+
+			if strings.HasSuffix(file, "log") {
+				fileDate, err = time.Parse(formatTimeStr, time.Now().String())
+				if err != nil {
+					return fmt.Errorf("error parsing time: %v: %v", err, file)
+				}
+			} else {
+				fileDate, err = time.Parse(formatTimeStr, file[lastSlash+1:lastSlash+11])
+				if err != nil {
+					return fmt.Errorf("error parsing time: %v: %v", err, file)
+				}
 			}
 
 			startDate, err := time.Parse(formatTimeStr, cfg.StartDate)
@@ -218,7 +226,7 @@ func ScrapeLogs(cfg ScraperCfg) error {
 				return fmt.Errorf("error parsing time: %v", err)
 			}
 
-			if fileDate.Nanosecond() > startDate.Nanosecond() && fileDate.Nanosecond() < untilDate.Nanosecond() {
+			if fileDate.UnixNano() < startDate.UnixNano() || fileDate.UnixNano() > untilDate.UnixNano() {
 				continue
 			}
 		}
