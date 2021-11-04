@@ -124,7 +124,7 @@ func processScraping(cfg ScraperCfg, filePath string, CSVData *[][]string, proce
 func ScrapeLogs(cfg ScraperCfg) error {
 	wg := sync.WaitGroup{}
 	runtime.GOMAXPROCS(128)
-	openFileSem := make(chan struct{}, 128) // semaphore, max open files 128
+	openFileSem := make(chan struct{}, 1000) // semaphore, max open files 1000
 
 	var CSVData = [][]string{}
 	var processDataMap = make(map[FarmDateMap][]float64)
@@ -210,9 +210,6 @@ func ScrapeLogs(cfg ScraperCfg) error {
 
 		wg.Add(1)
 		go func(cfg ScraperCfg, filePath string, CSVData *[][]string, processDataMap *map[FarmDateMap][]float64, dateIndexMap *map[string]int, csvDataFarmIndex int) {
-
-			// if there are already 128 goroutines running,
-			// it will block here and wait until theres less than 128
 			openFileSem <- struct{}{}
 			defer func() { <-openFileSem }()
 			defer wg.Done()
