@@ -39,6 +39,8 @@ sudo go run ./cli/LogScraper/main.go
 -percent-proof-time [Set N to get percentage of proof time instances less than N]
 -gaps-proof-checks [Set N to get number of instances where proof check time gaps is greater or equal than N]
 
+-start-date [Set for starting date of logs to be scraping (YYYY-MM-DD)]
+
 -save [Set if csv file will be saved to the dest dir] 
 -print [Set if summary will be printed in the cli]
 ```
