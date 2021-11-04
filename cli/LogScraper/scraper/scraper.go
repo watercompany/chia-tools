@@ -210,7 +210,7 @@ func ScrapeLogs(cfg ScraperCfg) error {
 			lastSlash := strings.LastIndex(file, "/")
 
 			if strings.HasSuffix(file, "log") {
-				fileDate, err = time.Parse(formatTimeStr, time.Now().String()[:9])
+				fileDate, err = time.Parse(formatTimeStr, time.Now().String()[:10])
 				if err != nil {
 					return fmt.Errorf("error parsing time: %v: %v", err, file)
 				}
