@@ -6,6 +6,7 @@ import (
 	"io/ioutil"
 	"os"
 	"strings"
+	"sync"
 	"time"
 )
 
@@ -120,6 +121,7 @@ func processScraping(cfg ScraperCfg, filePath string, CSVData *[][]string, proce
 }
 
 func ScrapeLogs(cfg ScraperCfg) error {
+	wg := sync.WaitGroup{}
 	var CSVData = [][]string{}
 	var processDataMap = make(map[FarmDateMap][]float64)
 	dateIndexMap := make(map[string]int)
@@ -202,12 +204,17 @@ func ScrapeLogs(cfg ScraperCfg) error {
 
 		csvDataFarmIndex := farmIndexMap[farmName]
 
-		err = processScraping(cfg, file, &CSVData, &processDataMap, &dateIndexMap, csvDataFarmIndex)
-		if err != nil {
-			return fmt.Errorf("error scraping: %v", err)
-		}
+		wg.Add(1)
+		go func(cfg ScraperCfg, filePath string, CSVData *[][]string, processDataMap *map[FarmDateMap][]float64, dateIndexMap *map[string]int, csvDataFarmIndex int) {
+			defer wg.Done()
 
+			err = processScraping(cfg, filePath, CSVData, processDataMap, dateIndexMap, csvDataFarmIndex)
+			if err != nil {
+				panic(fmt.Sprintf("error scraping: %v", err))
+			}
+		}(cfg, file, &CSVData, &processDataMap, &dateIndexMap, csvDataFarmIndex)
 	}
+	wg.Wait()
 
 	// Process median from process data
 	if cfg.MedianProofTime {
