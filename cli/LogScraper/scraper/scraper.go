@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
+	"runtime"
 	"strings"
 	"sync"
 	"time"
@@ -122,6 +123,8 @@ func processScraping(cfg ScraperCfg, filePath string, CSVData *[][]string, proce
 
 func ScrapeLogs(cfg ScraperCfg) error {
 	wg := sync.WaitGroup{}
+	runtime.GOMAXPROCS(128)
+
 	var CSVData = [][]string{}
 	var processDataMap = make(map[FarmDateMap][]float64)
 	dateIndexMap := make(map[string]int)
