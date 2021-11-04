@@ -168,7 +168,7 @@ func ScrapeLogs(cfg ScraperCfg) error {
 	}
 
 	x := 1
-	for d := oldestDate; !d.After(untilDate); d = d.AddDate(0, 0, 1) {
+	for d := oldestDate; !d.After(time.Now()); d = d.AddDate(0, 0, 1) {
 		data := []string{d.Format(formatTimeStr)}
 		data = append(data, dataToBeAdded...)
 		CSVData = append(CSVData, data)
