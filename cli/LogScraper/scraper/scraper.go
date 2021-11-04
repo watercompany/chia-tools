@@ -218,7 +218,7 @@ func ScrapeLogs(cfg ScraperCfg) error {
 				return fmt.Errorf("error parsing time: %v", err)
 			}
 
-			if fileDate.Nanosecond() > startDate.Nanosecond() {
+			if fileDate.Nanosecond() > startDate.Nanosecond() && fileDate.Nanosecond() < untilDate.Nanosecond() {
 				continue
 			}
 		}
