@@ -162,9 +162,19 @@ func ScrapeLogs(cfg ScraperCfg) error {
 	if err != nil {
 		return fmt.Errorf("error parsing time: %v", err)
 	}
+	untilDate := time.Now()
+
+	if cfg.StartDate != "" {
+		oldestDate, err = time.Parse(formatTimeStr, cfg.StartDate)
+		if err != nil {
+			return fmt.Errorf("error parsing time: %v", err)
+		}
+
+		untilDate = oldestDate.AddDate(0, 1, 0)
+	}
 
 	x := 1
-	for d := oldestDate; !d.After(time.Now()); d = d.AddDate(0, 0, 1) {
+	for d := oldestDate; !d.After(untilDate); d = d.AddDate(0, 0, 1) {
 		data := []string{d.Format(formatTimeStr)}
 		data = append(data, dataToBeAdded...)
 		CSVData = append(CSVData, data)
@@ -194,6 +204,23 @@ func ScrapeLogs(cfg ScraperCfg) error {
 	for _, file := range files {
 		if !strings.Contains(file, "farm") || strings.Contains(file, "lock") || !(strings.HasSuffix(file, "txt") || strings.HasSuffix(file, "log")) {
 			continue
+		}
+
+		if cfg.StartDate != "" {
+			lastSlash := strings.LastIndex(file, "/")
+			fileDate, err := time.Parse(formatTimeStr, file[lastSlash+1:lastSlash+11])
+			if err != nil {
+				return fmt.Errorf("error parsing time: %v: %v", err, file)
+			}
+
+			startDate, err := time.Parse(formatTimeStr, cfg.StartDate)
+			if err != nil {
+				return fmt.Errorf("error parsing time: %v", err)
+			}
+
+			if fileDate.Nanosecond() > startDate.Nanosecond() {
+				continue
+			}
 		}
 
 		// Get farm name

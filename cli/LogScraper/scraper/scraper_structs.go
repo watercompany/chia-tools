@@ -6,6 +6,8 @@ type ScraperCfg struct {
 	Save    bool
 	Print   bool
 
+	StartDate string
+
 	Proofs             bool
 	TotalPlots         bool
 	TotalEligiblePlots bool
