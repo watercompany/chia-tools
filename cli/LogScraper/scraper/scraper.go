@@ -5,9 +5,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
-	"runtime"
 	"strings"
-	"sync"
 	"time"
 )
 
@@ -122,10 +120,6 @@ func processScraping(cfg ScraperCfg, filePath string, CSVData *[][]string, proce
 }
 
 func ScrapeLogs(cfg ScraperCfg) error {
-	wg := sync.WaitGroup{}
-	runtime.GOMAXPROCS(128)
-	openFileSem := make(chan struct{}, 1000) // semaphore, max open files 1000
-
 	var CSVData = [][]string{}
 	var processDataMap = make(map[FarmDateMap][]float64)
 	dateIndexMap := make(map[string]int)
@@ -243,20 +237,11 @@ func ScrapeLogs(cfg ScraperCfg) error {
 
 		csvDataFarmIndex := farmIndexMap[farmName]
 
-		wg.Add(1)
-		go func(cfg ScraperCfg, filePath string, CSVData *[][]string, processDataMap *map[FarmDateMap][]float64, dateIndexMap *map[string]int, csvDataFarmIndex int) {
-			openFileSem <- struct{}{}
-			defer func() { <-openFileSem }()
-			defer wg.Done()
-
-			err = processScraping(cfg, filePath, CSVData, processDataMap, dateIndexMap, csvDataFarmIndex)
-			if err != nil {
-				panic(fmt.Sprintf("error scraping: %v", err))
-			}
-		}(cfg, file, &CSVData, &processDataMap, &dateIndexMap, csvDataFarmIndex)
+		err = processScraping(cfg, file, &CSVData, &processDataMap, &dateIndexMap, csvDataFarmIndex)
+		if err != nil {
+			panic(fmt.Sprintf("error scraping: %v", err))
+		}
 	}
-	wg.Wait()
-	close(openFileSem)
 
 	// Process median from process data
 	if cfg.MedianProofTime {
