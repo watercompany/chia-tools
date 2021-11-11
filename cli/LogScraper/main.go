@@ -21,6 +21,8 @@ var (
 	percentProofTime   int
 	gapsProofChecks    int
 
+	totalProofsFound *bool
+
 	startDate string
 
 	save  *bool
@@ -32,6 +34,7 @@ func init() {
 	flag.StringVar(&destPath, "dest", "/mnt/skynas-log/HarvesterLog/summary", "destPath of scraped data")
 
 	proofs = flag.Bool("proofs", false, "set if tool will scrape for proof found")
+	totalProofsFound = flag.Bool("total-proofs-found", false, "set if tool will total all proofs found")
 	totalPlots = flag.Bool("total-plots", false, "set if tool will scrape for minimum total plots")
 	totalEligiblePlots = flag.Bool("total-eligible-plots", false, "set if tool will scrape for total eligible plots")
 	maxProofTime = flag.Bool("max-proof-time", false, "set if tool will scrape for max proof time")
@@ -87,6 +90,7 @@ func main() {
 		Print:              *print,
 		StartDate:          startDate,
 		Proofs:             *proofs,
+		TotalProofsFound:   *totalProofsFound,
 		TotalPlots:         *totalPlots,
 		TotalEligiblePlots: *totalEligiblePlots,
 		MaxProofTime:       *maxProofTime,
