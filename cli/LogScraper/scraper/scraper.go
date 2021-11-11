@@ -51,7 +51,7 @@ func saveCSV(data [][]string, dest string) error {
 	return nil
 }
 
-func processScraping(cfg ScraperCfg, filePath string, CSVData *[][]string, processDataMap *map[FarmDateMap][]float64, dateIndexMap *map[string]int, csvDataFarmIndex int) error {
+func processScraping(cfg *ScraperCfg, filePath string, CSVData *[][]string, processDataMap *map[FarmDateMap][]float64, dateIndexMap *map[string]int, csvDataFarmIndex int) error {
 	file, err := os.Open(filePath)
 	if err != nil {
 		return fmt.Errorf("failed to open log file: %s, skipping reading", err)
@@ -70,7 +70,7 @@ func processScraping(cfg ScraperCfg, filePath string, CSVData *[][]string, proce
 			lines := strings.Split(strings.ReplaceAll(string(buf), "\r\n", "\n"), "\n")
 
 			if cfg.Proofs {
-				err := parseLogForProofsFound(lines, CSVData, dateIndexMap, csvDataFarmIndex)
+				err := parseLogForProofsFound(&cfg.TotalProofsFoundInt, lines, CSVData, dateIndexMap, csvDataFarmIndex)
 				if err != nil {
 					return fmt.Errorf("error finding proofs: %v", err)
 				}
@@ -125,6 +125,7 @@ func ScrapeLogs(cfg ScraperCfg) error {
 	dateIndexMap := make(map[string]int)
 	farmIndexMap := make(map[string]int)
 	CSVFilename := cfg.DestDir + time.Now().Format(formatTimeStr)
+	cfg.TotalProofsFoundInt = 0
 
 	farmFoldersCount, err := countFarmFolders(cfg.SrcDir)
 	if err != nil {
@@ -237,7 +238,7 @@ func ScrapeLogs(cfg ScraperCfg) error {
 
 		csvDataFarmIndex := farmIndexMap[farmName]
 
-		err = processScraping(cfg, file, &CSVData, &processDataMap, &dateIndexMap, csvDataFarmIndex)
+		err = processScraping(&cfg, file, &CSVData, &processDataMap, &dateIndexMap, csvDataFarmIndex)
 		if err != nil {
 			panic(fmt.Sprintf("error scraping: %v", err))
 		}
@@ -271,6 +272,10 @@ func ScrapeLogs(cfg ScraperCfg) error {
 			fmt.Println(line)
 		}
 		fmt.Println(CSVData[0])
+
+		if cfg.TotalProofsFound {
+			fmt.Printf("Total Proofs Found = %v\n", cfg.TotalProofsFoundInt)
+		}
 	}
 
 	if cfg.Save {

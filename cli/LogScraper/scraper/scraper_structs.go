@@ -9,6 +9,7 @@ type ScraperCfg struct {
 	StartDate string
 
 	Proofs             bool
+	TotalProofsFound   bool
 	TotalPlots         bool
 	TotalEligiblePlots bool
 	MaxProofTime       bool
@@ -16,6 +17,8 @@ type ScraperCfg struct {
 	MeanProofTime      bool
 	PercentProofTime   int
 	GapsProofChecks    int
+
+	TotalProofsFoundInt int
 }
 
 type FarmDateMap struct {

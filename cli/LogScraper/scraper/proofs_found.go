@@ -7,7 +7,7 @@ import (
 	"time"
 )
 
-func parseLogForProofsFound(lines []string, CSVData *[][]string, dateIndexMap *map[string]int, csvDataFarmIndex int) error {
+func parseLogForProofsFound(TotalProofsFoundInt *int, lines []string, CSVData *[][]string, dateIndexMap *map[string]int, csvDataFarmIndex int) error {
 	s := ""
 	for _, line := range lines {
 		if len(line) < 23 {
@@ -34,6 +34,8 @@ func parseLogForProofsFound(lines []string, CSVData *[][]string, dateIndexMap *m
 				return err
 			}
 			(*CSVData)[(*dateIndexMap)[lineDateStr]][csvDataFarmIndex] = fmt.Sprintf("---%v---", currentTotalProofs+1)
+
+			*TotalProofsFoundInt++
 		}
 
 	}
