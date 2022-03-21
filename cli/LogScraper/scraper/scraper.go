@@ -165,7 +165,7 @@ func ScrapeLogs(cfg ScraperCfg) error {
 			return fmt.Errorf("error parsing time: %v", err)
 		}
 
-		untilDate = oldestDate.AddDate(0, 1, 0)
+		// untilDate = oldestDate.AddDate(0, 1, 0)
 	}
 
 	x := 1

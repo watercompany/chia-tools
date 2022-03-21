@@ -68,6 +68,19 @@ func filePathWalkDir(root string) ([]string, error) {
 					listFiles = append(listFiles, root+"/"+file.Name()+"/"+farmFile.Name())
 				}
 
+				if farmFile.IsDir() && strings.Contains(farmFile.Name(), "live") {
+					farmLiveFiles, err := ioutil.ReadDir(root + "/" + file.Name() + "/" + farmFile.Name())
+					if err != nil {
+						return nil, err
+					}
+
+					for _, farmLiveFile := range farmLiveFiles {
+						if !farmLiveFile.IsDir() {
+							listFiles = append(listFiles, root+"/"+file.Name()+"/"+farmFile.Name()+"/"+farmLiveFile.Name())
+						}
+					}
+				}
+
 			}
 
 		}
