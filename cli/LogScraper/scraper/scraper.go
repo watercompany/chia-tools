@@ -1,6 +1,7 @@
 package scraper
 
 import (
+	"chia-tools/cli/Watcher/telegrambot"
 	"encoding/csv"
 	"fmt"
 	"io/ioutil"
@@ -153,10 +154,13 @@ func ScrapeLogs(cfg ScraperCfg) error {
 	// if strings.HasPrefix(timeStr, ".") {
 	// 	timeStr = files[0][strDateIndexStart+1 : strDateIndexEnd+1]
 	// }
-	oldestDate, err := time.Parse(formatTimeStr, "2021-08-07")
-	if err != nil {
-		return fmt.Errorf("error parsing time: %v", err)
-	}
+	//oldestDate, err := time.Parse(formatTimeStr, "2021-08-07")
+	//if err != nil {
+	//	return fmt.Errorf("error parsing time: %v", err)
+	//}
+
+	// use the past 7 days
+	oldestDate := time.Now().AddDate(0, 0, -7)
 	untilDate := time.Now()
 
 	if cfg.StartDate != "" {
@@ -285,5 +289,39 @@ func ScrapeLogs(cfg ScraperCfg) error {
 		}
 	}
 
+	// send to telegram
+	if cfg.SendTelegram {
+		// create message
+		tgMessage := "================="
+		err := telegrambot.SendMessage(cfg.BotToken, cfg.ChatID, tgMessage)
+		if err != nil {
+			fmt.Printf("error sending message to telegram: %v\n", err)
+			os.Exit(1)
+		}
+
+		for _, line := range CSVData {
+			err := telegrambot.SendMessage(cfg.BotToken, cfg.ChatID, fmt.Sprint(line))
+			if err != nil {
+				fmt.Printf("error sending message to telegram: %v\n", err)
+				os.Exit(1)
+			}
+		}
+
+		formattedLine := fmt.Sprint(CSVData[0])
+		err = telegrambot.SendMessage(cfg.BotToken, cfg.ChatID, formattedLine)
+		if err != nil {
+			fmt.Printf("error sending message to telegram: %v\n", err)
+			os.Exit(1)
+		}
+
+		if cfg.TotalProofsFound {
+			formattedLine := fmt.Sprint("Total Proofs Found = %v", cfg.TotalProofsFoundInt)
+			err := telegrambot.SendMessage(cfg.BotToken, cfg.ChatID, formattedLine)
+			if err != nil {
+				fmt.Printf("error sending message to telegram: %v\n", err)
+				os.Exit(1)
+			}
+		}
+	}
 	return nil
 }

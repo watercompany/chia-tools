@@ -1,10 +1,13 @@
 package scraper
 
 type ScraperCfg struct {
-	SrcDir  string
-	DestDir string
-	Save    bool
-	Print   bool
+	SrcDir       string
+	DestDir      string
+	Save         bool
+	Print        bool
+	SendTelegram bool
+	BotToken     string
+	ChatID       string
 
 	StartDate string
 
