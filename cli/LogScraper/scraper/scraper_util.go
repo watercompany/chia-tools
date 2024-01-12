@@ -109,3 +109,7 @@ func getIndexUntilSpaceToTheLeft(line string, start int) int {
 
 	return start
 }
+
+func removeIndex(s []string, index int) []string {
+	return append(s[:index], s[index+1:]...)
+}
