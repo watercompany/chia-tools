@@ -6,7 +6,7 @@ import (
 )
 
 const (
-	SendMessageFormat = "https://api.telegram.org/bot%s/sendMessage?chat_id=@%s&text=%s"
+	SendMessageFormat = "https://api.telegram.org/bot%s/sendMessage?chat_id=%s&text=%s"
 )
 
 func SendMessage(botToken, chatID, msg string) error {

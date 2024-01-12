@@ -289,25 +289,35 @@ func ScrapeLogs(cfg ScraperCfg) error {
 	// send to telegram
 	if cfg.SendTelegram {
 		// create message
-		tgMessage := "\n\n=================\n"
+		tgMessage := "================="
+		err := telegrambot.SendMessage(cfg.BotToken, cfg.ChatID, tgMessage)
+		if err != nil {
+			fmt.Printf("error sending message to telegram: %v\n", err)
+			os.Exit(1)
+		}
 
 		for _, line := range CSVData {
-			formattedLine := fmt.Sprint(line)
-			tgMessage += formattedLine + "/n"
+			err := telegrambot.SendMessage(cfg.BotToken, cfg.ChatID, fmt.Sprint(line))
+			if err != nil {
+				fmt.Printf("error sending message to telegram: %v\n", err)
+				os.Exit(1)
+			}
 		}
 
 		formattedLine := fmt.Sprint(CSVData[0])
-		tgMessage += formattedLine + "/n"
-
-		if cfg.TotalProofsFound {
-			formattedLine := fmt.Sprint("Total Proofs Found = %v\n", cfg.TotalProofsFoundInt)
-			tgMessage += formattedLine + "/n"
+		err = telegrambot.SendMessage(cfg.BotToken, cfg.ChatID, formattedLine)
+		if err != nil {
+			fmt.Printf("error sending message to telegram: %v\n", err)
+			os.Exit(1)
 		}
 
-		err := telegrambot.SendMessage(cfg.BotToken, cfg.ChatID, tgMessage)
-		if err != nil {
-			fmt.Printf("error sending message to telegram: %v", err)
-			os.Exit(1)
+		if cfg.TotalProofsFound {
+			formattedLine := fmt.Sprint("Total Proofs Found = %v", cfg.TotalProofsFoundInt)
+			err := telegrambot.SendMessage(cfg.BotToken, cfg.ChatID, formattedLine)
+			if err != nil {
+				fmt.Printf("error sending message to telegram: %v\n", err)
+				os.Exit(1)
+			}
 		}
 	}
 	return nil
