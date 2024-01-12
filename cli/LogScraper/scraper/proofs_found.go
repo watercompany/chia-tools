@@ -31,7 +31,7 @@ func parseLogForProofsFound(TotalProofsFoundInt *int, lines []string, CSVData *[
 			}
 			currentTotalProofs, err := strconv.Atoi(currentTotalProofsStr)
 			if err != nil {
-				return err
+				continue
 			}
 			(*CSVData)[(*dateIndexMap)[lineDateStr]][csvDataFarmIndex] = fmt.Sprintf("---%v---", currentTotalProofs+1)
 
