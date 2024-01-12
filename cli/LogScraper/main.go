@@ -25,8 +25,11 @@ var (
 
 	startDate string
 
-	save  *bool
-	print *bool
+	save         *bool
+	print        *bool
+	sendTelegram *bool
+	botToken     string
+	chatID       string
 )
 
 func init() {
@@ -47,6 +50,9 @@ func init() {
 
 	save = flag.Bool("save", false, "set if csv will be saved")
 	print = flag.Bool("print", false, "set if summary will be printed")
+	sendTelegram = flag.Bool("send-telegram", false, "set if proofs will be sent to telegram")
+	flag.StringVar(&botToken, "bot-token", "", "Telegram bot token to be used for sending message to telegram")
+	flag.StringVar(&chatID, "chat-id", "", "Telegram chat id of where the message to be sent")
 }
 
 func isFolderExist(path string) bool {
@@ -88,6 +94,9 @@ func main() {
 		SrcDir:             srcPath,
 		Save:               *save,
 		Print:              *print,
+		SendTelegram:       *sendTelegram,
+		BotToken:           botToken,
+		ChatID:             chatID,
 		StartDate:          startDate,
 		Proofs:             *proofs,
 		TotalProofsFound:   *totalProofsFound,
