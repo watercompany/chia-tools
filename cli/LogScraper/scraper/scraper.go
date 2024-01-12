@@ -154,10 +154,13 @@ func ScrapeLogs(cfg ScraperCfg) error {
 	// if strings.HasPrefix(timeStr, ".") {
 	// 	timeStr = files[0][strDateIndexStart+1 : strDateIndexEnd+1]
 	// }
-	oldestDate, err := time.Parse(formatTimeStr, "2021-08-07")
-	if err != nil {
-		return fmt.Errorf("error parsing time: %v", err)
-	}
+	//oldestDate, err := time.Parse(formatTimeStr, "2021-08-07")
+	//if err != nil {
+	//	return fmt.Errorf("error parsing time: %v", err)
+	//}
+
+	// use the past 7 days
+	oldestDate := time.Now().AddDate(0, 0, -7)
 	untilDate := time.Now()
 
 	if cfg.StartDate != "" {
