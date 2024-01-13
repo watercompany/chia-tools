@@ -216,7 +216,7 @@ func ScrapeLogs(cfg ScraperCfg) error {
 			}
 		}
 
-		if fileDate.UnixNano() < startDate.UnixNano() || fileDate.UnixNano() > untilDate.UnixNano() {
+		if fileDate.AddDate(0, 0, 1).UnixNano() < startDate.UnixNano() || fileDate.UnixNano() > untilDate.UnixNano() {
 			continue
 		}
 
@@ -283,7 +283,7 @@ func ScrapeLogs(cfg ScraperCfg) error {
 	// remove farm-2 to farm-5 data for tg for now
 	if cfg.SendTelegram {
 		// create message
-		tgMessage := "================="
+		tgMessage := "-=================-"
 		err := telegrambot.SendMessage(cfg.BotToken, cfg.ChatID, tgMessage)
 		if err != nil {
 			fmt.Printf("error sending message to telegram: %v\n", err)
