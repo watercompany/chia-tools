@@ -157,7 +157,7 @@ func ScrapeLogs(cfg ScraperCfg) error {
 
 	// use the past 2 days
 	oldestDate := time.Now().AddDate(0, 0, -3)
-
+	startDate := oldestDate
 	untilDate := time.Now()
 
 	if cfg.StartDate != "" {
@@ -202,33 +202,26 @@ func ScrapeLogs(cfg ScraperCfg) error {
 			continue
 		}
 		fileDate := time.Time{}
-		if cfg.StartDate != "" {
-			lastSlash := strings.LastIndex(file, "/")
+		lastSlash := strings.LastIndex(file, "/")
 
-			if strings.HasSuffix(file, "log") {
-				fileDate, err = time.Parse(formatTimeStr, time.Now().String()[:10])
-				if err != nil {
-					return fmt.Errorf("error parsing time: %v: %v", err, file)
-				}
-			} else {
-				fileDate, err = time.Parse(formatTimeStr, file[lastSlash+1:lastSlash+11])
-				if err != nil {
-					return fmt.Errorf("error parsing time: %v: %v", err, file)
-				}
-			}
-
-			startDate, err := time.Parse(formatTimeStr, cfg.StartDate)
+		if strings.HasSuffix(file, "log") {
+			fileDate, err = time.Parse(formatTimeStr, time.Now().String()[:10])
 			if err != nil {
-				return fmt.Errorf("error parsing time: %v", err)
+				return fmt.Errorf("error parsing time: %v: %v", err, file)
 			}
-
-			if fileDate.UnixNano() < startDate.UnixNano() || fileDate.UnixNano() > untilDate.UnixNano() {
-				continue
+		} else {
+			fileDate, err = time.Parse(formatTimeStr, file[lastSlash+1:lastSlash+11])
+			if err != nil {
+				return fmt.Errorf("error parsing time: %v: %v", err, file)
 			}
 		}
 
+		if fileDate.UnixNano() < startDate.UnixNano() || fileDate.UnixNano() > untilDate.UnixNano() {
+			continue
+		}
+
 		// Get farm name
-		lastSlash := strings.LastIndex(file, "/")
+		lastSlash = strings.LastIndex(file, "/")
 		farmName := file[lastSlash-7 : lastSlash]
 
 		if strings.Contains(file, "live") {
