@@ -162,6 +162,7 @@ func ScrapeLogs(cfg ScraperCfg) error {
 
 	if cfg.StartDate != "" {
 		oldestDate, err = time.Parse(formatTimeStr, cfg.StartDate)
+		startDate = oldestDate
 		if err != nil {
 			return fmt.Errorf("error parsing time: %v", err)
 		}
