@@ -156,10 +156,7 @@ func ScrapeLogs(cfg ScraperCfg) error {
 	// }
 
 	// use the past 2 days
-	oldestDate, err := time.Parse(formatTimeStr, time.Now().AddDate(0, 0, -2).String()[:10])
-	if err != nil {
-		return fmt.Errorf("error parsing time: %v", err)
-	}
+	oldestDate := time.Now().AddDate(0, 0, -3)
 
 	untilDate := time.Now()
 
