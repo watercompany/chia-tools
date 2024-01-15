@@ -28,6 +28,8 @@ func SendMessage(botToken, chatID, msg string) error {
 		return fmt.Errorf("error in creating http request: %v", err)
 	}
 
+	req.Close = true
+
 	resp, err := client.Do(req)
 	if err != nil {
 		return fmt.Errorf("error in executing http request: %v", err)
