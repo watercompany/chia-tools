@@ -155,8 +155,8 @@ func ScrapeLogs(cfg ScraperCfg) error {
 	// 	timeStr = files[0][strDateIndexStart+1 : strDateIndexEnd+1]
 	// }
 
-	// use the past 2 days
-	oldestDate := time.Now().AddDate(0, 0, -3)
+	// use the past 30 days
+	oldestDate := time.Now().AddDate(0, 0, -30)
 	startDate := oldestDate
 	untilDate := time.Now()
 
