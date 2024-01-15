@@ -48,7 +48,13 @@ func main() {
 
 	var proofsFoundHistory []string
 	lastProofCheckTimeHistory := make([]int64, farmFoldersCount+1)
+	// add initial values
+	for i := 1; i <= farmFoldersCount; i++ {
+		lastProofCheckTimeHistory[i] = time.Now().AddDate(0, 0, -1).UTC().Unix()
+	}
+
 	sentErrorMsg := make([]bool, farmFoldersCount+1)
+
 	for {
 		for i := 1; i <= farmFoldersCount; i++ {
 			farmName := fmt.Sprintf("farm-%02v", i)
