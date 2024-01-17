@@ -70,7 +70,8 @@ func main() {
 					err := telegrambot.SendMessage(botToken, chatID, fmt.Sprintf("%s: %s", farmName, val))
 					if err != nil {
 						fmt.Printf("error sending message to telegram: %v", err)
-						os.Exit(1)
+						// try one last time
+						_ = telegrambot.SendMessage(botToken, chatID, fmt.Sprintf("%s: %s", farmName, val))
 					}
 				}
 			}
@@ -96,7 +97,8 @@ func main() {
 				err := telegrambot.SendMessage(botToken, chatID, msg)
 				if err != nil {
 					fmt.Printf("error sending message to telegram: %v", err)
-					os.Exit(1)
+					// try one last time
+					_ = telegrambot.SendMessage(botToken, chatID, msg)
 				}
 
 				sentErrorMsg[i] = true
