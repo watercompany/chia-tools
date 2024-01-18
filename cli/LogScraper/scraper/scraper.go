@@ -291,6 +291,7 @@ func ScrapeLogs(cfg ScraperCfg) error {
 			os.Exit(1)
 		}
 
+		line_message := ""
 		for _, line := range CSVData {
 			// remove farm-2 to farm-5 data for tg for now
 			line = removeIndex(line, 2)
@@ -298,12 +299,13 @@ func ScrapeLogs(cfg ScraperCfg) error {
 			line = removeIndex(line, 2)
 			line = removeIndex(line, 2)
 
-			err := telegrambot.SendMessage(cfg.BotToken, cfg.ChatID, fmt.Sprint(line))
-			if err != nil {
-				fmt.Printf("error sending message to telegram: %v\n", err)
-				os.Exit(1)
-			}
-			time.Sleep(1 * time.Second)
+			line_message += fmt.Sprint(line) + "%0D%0A"
+		}
+
+		err = telegrambot.SendMessage(cfg.BotToken, cfg.ChatID, line_message)
+		if err != nil {
+			fmt.Printf("error sending message to telegram: %v\n", err)
+			os.Exit(1)
 		}
 
 		if cfg.TotalProofsFound {
