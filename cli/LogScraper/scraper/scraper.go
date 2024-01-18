@@ -303,6 +303,7 @@ func ScrapeLogs(cfg ScraperCfg) error {
 				fmt.Printf("error sending message to telegram: %v\n", err)
 				os.Exit(1)
 			}
+			time.Sleep(1 * time.Second)
 		}
 
 		if cfg.TotalProofsFound {
