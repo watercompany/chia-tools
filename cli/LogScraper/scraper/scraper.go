@@ -293,11 +293,11 @@ func ScrapeLogs(cfg ScraperCfg) error {
 
 		line_message := ""
 		for _, line := range CSVData {
-			// remove farm-3 to farm-4 data for tg for now
+			// remove farm-3 data for tg for now
 			//line = removeIndex(line, 2)
 			//line = removeIndex(line, 3)
 			line = removeIndex(line, 3)
-			line = removeIndex(line, 3)
+			//line = removeIndex(line, 3)
 			// remove farm-8 data for tg for now
 			line = removeIndex(line, 6)
 
