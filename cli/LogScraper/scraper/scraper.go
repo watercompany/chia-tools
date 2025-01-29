@@ -288,7 +288,7 @@ func ScrapeLogs(cfg ScraperCfg) error {
 		err := telegrambot.SendMessage(cfg.BotToken, cfg.ChatID, tgMessage)
 		if err != nil {
 			fmt.Printf("error sending message to telegram: %v\n", err)
-			os.Exit(1)
+			// os.Exit(1)
 		}
 
 		line_message := ""
