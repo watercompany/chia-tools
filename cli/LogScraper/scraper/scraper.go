@@ -298,8 +298,12 @@ func ScrapeLogs(cfg ScraperCfg) error {
 			//line = removeIndex(line, 3)
 			//line = removeIndex(line, 3)
 			//line = removeIndex(line, 3)
-			// remove farm-8 data for tg for now
-			//line = removeIndex(line, 7)
+			// remove farm-11 data for tg for now
+			line = removeIndex(line, 10)
+			// remove farm-10 data for tg for now
+			line = removeIndex(line, 9)
+			// remove farm-3 data for tg for now
+			line = removeIndex(line, 2)
 
 			line_message += fmt.Sprint(line) + "%0D%0A"
 		}
